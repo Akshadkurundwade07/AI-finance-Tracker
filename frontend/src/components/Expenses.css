@@ -1,0 +1,77 @@
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.expenses-table {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.expense-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.3s ease;
+}
+
+.expense-row:hover {
+  transform: translateX(8px);
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.25);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+}
+
+.expense-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expense-info strong {
+  font-size: 15px;
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.expense-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+
+.expense-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.expense-amount {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  min-width: 90px;
+  text-align: right;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}

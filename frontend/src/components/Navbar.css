@@ -1,0 +1,71 @@
+.navbar {
+  background: rgba(10, 10, 26, 0.85);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 18px 0;
+  margin-bottom: 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #fff;
+  background: rgba(102, 126, 234, 0.15);
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-user span {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-user .btn {
+  padding: 9px 20px;
+  font-size: 14px;
+}
