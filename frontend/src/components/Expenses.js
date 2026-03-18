@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../api';
 import './Expenses.css';
 
 function Expenses() {
@@ -20,7 +21,7 @@ function Expenses() {
   const fetchExpenses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/expenses', {
+      const response = await axios.get(`${API_URL}/api/expenses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setExpenses(response.data);
@@ -37,13 +38,13 @@ function Expenses() {
       const token = localStorage.getItem('token');
       
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/expenses/${editingId}`, formData, {
+        await axios.put(`${API_URL}/api/expenses/${editingId}`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessage('Expense updated successfully!');
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:5000/api/expenses', formData, {
+        await axios.post(`${API_URL}/api/expenses`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessage('Expense added successfully!');
@@ -71,7 +72,7 @@ function Expenses() {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+      await axios.delete(`${API_URL}/api/expenses/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchExpenses();

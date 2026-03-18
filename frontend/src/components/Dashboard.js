@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../api';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -18,7 +19,7 @@ function Dashboard() {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/auth/me', {
+      const res = await axios.get(`${API_URL}/api/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMonthlyIncome(res.data.monthlyIncome || 0);
@@ -35,7 +36,7 @@ function Dashboard() {
   const fetchExpenses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/expenses', {
+      const response = await axios.get(`${API_URL}/api/expenses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setExpenses(response.data);
@@ -58,7 +59,7 @@ function Dashboard() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put('http://localhost:5000/api/auth/income',
+      const res = await axios.put(`${API_URL}/api/auth/income`,
         { monthlyIncome: newIncome },
         { headers: { Authorization: `Bearer ${token}` } }
       );

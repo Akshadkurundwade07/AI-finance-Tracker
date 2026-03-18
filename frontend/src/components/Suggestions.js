@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_URL from '../api';
 import './Suggestions.css';
 
 function Suggestions() {
@@ -13,7 +14,7 @@ function Suggestions() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/api/ai/suggestions', {}, {
+      const response = await axios.post(`${API_URL}/api/ai/suggestions`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSuggestions(response.data.suggestions);

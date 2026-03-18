@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../api';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './Analysis.css';
 
@@ -22,7 +23,7 @@ function Analysis() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/expenses/analysis?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
+        `${API_URL}/api/expenses/analysis?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setAnalysis(response.data);

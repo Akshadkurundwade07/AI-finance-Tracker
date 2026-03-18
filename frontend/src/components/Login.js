@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../api';
 import './Auth.css';
 
 function Login({ onLogin }) {
@@ -13,7 +14,7 @@ function Login({ onLogin }) {
     setError('');
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData);
       onLogin(response.data.token, response.data.user);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
