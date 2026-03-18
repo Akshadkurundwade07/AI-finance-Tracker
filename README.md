@@ -2,6 +2,7 @@
 
 
 ##live: https://ai-finance-tracker-itqm.vercel.app/
+
 A full-stack personal finance tracker with AI-powered suggestions, expense management, visual analytics, and monthly income tracking. Built with React, Node.js, MongoDB, and Groq AI.
 
 ---
