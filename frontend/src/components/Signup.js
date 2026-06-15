@@ -5,7 +5,15 @@ import API_URL from '../api';
 import './Auth.css';
 
 function Signup({ onLogin }) {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', monthlyIncome: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    password: '', 
+    monthlyIncome: '',
+    isSalaried: false,
+    monthlySalary: '',
+    salaryDate: 1
+  });
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
@@ -62,7 +70,7 @@ function Signup({ onLogin }) {
           </div>
 
           <div className="form-group">
-            <label>Monthly Income (₹)</label>
+            <label>Monthly Income (₹) - Optional</label>
             <input
               type="number"
               placeholder="e.g. 50000"
@@ -70,9 +78,50 @@ function Signup({ onLogin }) {
               step="0.01"
               value={formData.monthlyIncome}
               onChange={(e) => setFormData({ ...formData, monthlyIncome: e.target.value })}
-              required
             />
           </div>
+
+          <div className="form-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={formData.isSalaried}
+                onChange={(e) => setFormData({ ...formData, isSalaried: e.target.checked })}
+                disabled={!formData.monthlyIncome || formData.monthlyIncome <= 0}
+              />
+              <span>I'm a salaried employee (enable auto-salary credit)</span>
+            </label>
+          </div>
+
+          {formData.isSalaried && (
+            <>
+              <div className="form-group">
+                <label>Monthly Salary Amount (₹)</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 50000"
+                  min="0"
+                  step="0.01"
+                  value={formData.monthlySalary}
+                  onChange={(e) => setFormData({ ...formData, monthlySalary: e.target.value })}
+                  required={formData.isSalaried}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Salary Credit Date (Day of Month)</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 1"
+                  min="1"
+                  max="31"
+                  value={formData.salaryDate}
+                  onChange={(e) => setFormData({ ...formData, salaryDate: e.target.value })}
+                  required={formData.isSalaried}
+                />
+              </div>
+            </>
+          )}
 
           {error && <div className="error">{error}</div>}
 

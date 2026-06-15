@@ -5,7 +5,7 @@ import './Dashboard.css';
 
 function Dashboard() {
   const [expenses, setExpenses] = useState([]);
-  const [stats, setStats] = useState({ total: 0, count: 0, categories: {} });
+  const [stats, setStats] = useState({ total: 0, earned: 0, count: 0, categories: {} });
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [editingIncome, setEditingIncome] = useState(false);
   const [newIncome, setNewIncome] = useState('');
@@ -36,23 +36,36 @@ function Dashboard() {
   const fetchExpenses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/expenses`, {
+      const response = await axios.get(`${API_URL}/api/expenses?limit=100`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setExpenses(response.data);
-      calculateStats(response.data);
+      // Handle both old and new response format
+      const expensesData = response.data.expenses || response.data;
+      setExpenses(expensesData);
+      calculateStats(expensesData);
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
   };
 
   const calculateStats = (expenseData) => {
-    const total = expenseData.reduce((sum, e) => sum + e.amount, 0);
-    const categories = expenseData.reduce((acc, e) => {
+    const debits = expenseData.filter(e => e.type === 'debit');
+    const credits = expenseData.filter(e => e.type === 'credit');
+    
+    const totalSpent = debits.reduce((sum, e) => sum + e.amount, 0);
+    const totalEarned = credits.reduce((sum, e) => sum + e.amount, 0);
+    
+    const categories = debits.reduce((acc, e) => {
       acc[e.category] = (acc[e.category] || 0) + e.amount;
       return acc;
     }, {});
-    setStats({ total, count: expenseData.length, categories });
+    
+    setStats({ 
+      total: totalSpent, 
+      earned: totalEarned,
+      count: expenseData.length, 
+      categories 
+    });
   };
 
   const handleUpdateIncome = async (e) => {
@@ -72,6 +85,7 @@ function Dashboard() {
     }
   };
 
+  const balance = stats.earned - stats.total;
   const remaining = monthlyIncome - stats.total;
   const spentPercent = monthlyIncome > 0 ? Math.min((stats.total / monthlyIncome) * 100, 100) : 0;
   const progressColor = spentPercent > 90 ? '#f5576c' : spentPercent > 70 ? '#ed8936' : '#48bb78';
@@ -131,17 +145,17 @@ function Dashboard() {
       {/* Stats Grid */}
       <div className="stats-grid">
         <div className="stat-card">
-          <h3>Monthly Income</h3>
-          <p className="stat-value">₹{monthlyIncome.toFixed(2)}</p>
+          <h3>Total Earned</h3>
+          <p className="stat-value" style={{ color: '#10b981' }}>₹{stats.earned.toFixed(2)}</p>
         </div>
         <div className="stat-card">
           <h3>Total Spent</h3>
-          <p className="stat-value">₹{stats.total.toFixed(2)}</p>
+          <p className="stat-value" style={{ color: '#f5576c' }}>₹{stats.total.toFixed(2)}</p>
         </div>
         <div className="stat-card">
-          <h3>Remaining</h3>
-          <p className="stat-value" style={{ color: remaining >= 0 ? undefined : '#f5576c' }}>
-            ₹{Math.abs(remaining).toFixed(2)}
+          <h3>Current Balance</h3>
+          <p className="stat-value" style={{ color: balance >= 0 ? '#10b981' : '#f5576c' }}>
+            ₹{balance.toFixed(2)}
           </p>
         </div>
         <div className="stat-card">
@@ -150,20 +164,22 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Expenses */}
+      {/* Recent Transactions */}
       <div className="card">
-        <h2>Recent Expenses</h2>
+        <h2>Recent Transactions</h2>
         {expenses.length === 0 ? (
-          <p>No expenses yet. Add your first expense!</p>
+          <p>No transactions yet. Add your first transaction!</p>
         ) : (
           <div className="expense-list">
             {expenses.slice(0, 5).map(expense => (
-              <div key={expense.id} className="expense-item">
+              <div key={expense.id} className={`expense-item ${expense.type === 'credit' ? 'credit-item' : ''}`}>
                 <div>
-                  <strong>{expense.description}</strong>
+                  <strong>{expense.type === 'credit' ? '💰' : '💸'} {expense.description}</strong>
                   <span className="expense-category">{expense.category}</span>
                 </div>
-                <span className="expense-amount">₹{expense.amount.toFixed(2)}</span>
+                <span className={`expense-amount ${expense.type === 'credit' ? 'credit-amount' : ''}`}>
+                  {expense.type === 'credit' ? '+' : '-'}₹{expense.amount.toFixed(2)}
+                </span>
               </div>
             ))}
           </div>

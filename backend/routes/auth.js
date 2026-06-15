@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/signup', async (req, res) => {
   try {
-    const { email, password, name, monthlyIncome } = req.body;
+    const { email, password, name, monthlyIncome, isSalaried, monthlySalary, salaryDate } = req.body;
     
     console.log('Signup attempt for:', email);
     
@@ -22,7 +22,10 @@ router.post('/signup', async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      monthlyIncome: parseFloat(monthlyIncome) || 0
+      monthlyIncome: parseFloat(monthlyIncome) || 0,
+      isSalaried: isSalaried || false,
+      monthlySalary: parseFloat(monthlySalary) || 0,
+      salaryDate: parseInt(salaryDate) || 1
     });
     
     await user.save();
@@ -36,7 +39,10 @@ router.post('/signup', async (req, res) => {
         id: user._id, 
         email: user.email, 
         name: user.name,
-        monthlyIncome: user.monthlyIncome
+        monthlyIncome: user.monthlyIncome,
+        isSalaried: user.isSalaried,
+        monthlySalary: user.monthlySalary,
+        salaryDate: user.salaryDate
       } 
     });
   } catch (error) {
@@ -75,7 +81,10 @@ router.post('/login', async (req, res) => {
         id: user._id, 
         email: user.email, 
         name: user.name,
-        monthlyIncome: user.monthlyIncome
+        monthlyIncome: user.monthlyIncome,
+        isSalaried: user.isSalaried,
+        monthlySalary: user.monthlySalary,
+        salaryDate: user.salaryDate
       } 
     });
   } catch (error) {
@@ -114,7 +123,15 @@ router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json({ id: user._id, name: user.name, email: user.email, monthlyIncome: user.monthlyIncome });
+    res.json({ 
+      id: user._id, 
+      name: user.name, 
+      email: user.email, 
+      monthlyIncome: user.monthlyIncome,
+      isSalaried: user.isSalaried,
+      monthlySalary: user.monthlySalary,
+      salaryDate: user.salaryDate
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

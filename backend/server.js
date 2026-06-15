@@ -1,10 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const expenseRoutes = require('./routes/expenses');
 const aiRoutes = require('./routes/ai');
+const loanRoutes = require('./routes/loans');
+const { startSalaryCron } = require('./utils/salaryCron');
 
 dotenv.config();
 
@@ -30,14 +33,28 @@ console.log('MONGO_URI:', process.env.MONGO_URI ? 'Configured âœ“' : 'Missing âœ
 // Connect to MongoDB
 connectDB();
 
-app.use(cors());
-app.use(express.json());
+// Enable compression for all responses
+app.use(compression());
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+
+// Body parser with size limits
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/loans', loanRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Backend URL: http://localhost:${PORT}`);
+  
+  // Start salary auto-credit cron job
+  startSalaryCron();
 });

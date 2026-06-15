@@ -22,6 +22,21 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
+  },
+  isSalaried: {
+    type: Boolean,
+    default: false
+  },
+  salaryDate: {
+    type: Number,
+    min: 1,
+    max: 31,
+    default: 1
+  },
+  monthlySalary: {
+    type: Number,
+    default: 0,
+    min: 0
   }
 }, {
   timestamps: true

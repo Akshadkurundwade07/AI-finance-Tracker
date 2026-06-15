@@ -8,3 +8,9 @@ dist/
 .idea/
 frontend/.env.local
 frontend/.env
+# Documentation files (exclude from repo)
+MONGODB_SETUP.md
+FEATURE_UPDATE.md
+LOANS_FEATURE.md
+OPTIMIZATION_GUIDE.md
+OPTIMIZATION_VISUAL.md

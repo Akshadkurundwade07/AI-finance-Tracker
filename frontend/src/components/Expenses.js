@@ -7,6 +7,7 @@ function Expenses() {
   const [expenses, setExpenses] = useState([]);
   const [formData, setFormData] = useState({
     amount: '',
+    type: 'debit',
     category: 'Food',
     description: '',
     date: new Date().toISOString().split('T')[0]
@@ -21,10 +22,12 @@ function Expenses() {
   const fetchExpenses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/expenses`, {
+      const response = await axios.get(`${API_URL}/api/expenses?limit=100`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setExpenses(response.data);
+      // Handle both old and new response format
+      const expensesData = response.data.expenses || response.data;
+      setExpenses(expensesData);
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
@@ -50,7 +53,7 @@ function Expenses() {
         setMessage('Expense added successfully!');
       }
       
-      setFormData({ amount: '', category: 'Food', description: '', date: new Date().toISOString().split('T')[0] });
+      setFormData({ amount: '', type: 'debit', category: 'Food', description: '', date: new Date().toISOString().split('T')[0] });
       fetchExpenses();
     } catch (error) {
       setMessage('Error saving expense');
@@ -60,6 +63,7 @@ function Expenses() {
   const handleEdit = (expense) => {
     setFormData({
       amount: expense.amount,
+      type: expense.type,
       category: expense.category,
       description: expense.description,
       date: expense.date.split('T')[0]
@@ -84,12 +88,23 @@ function Expenses() {
 
   return (
     <div className="container">
-      <h1>Manage Expenses</h1>
+      <h1>Manage Transactions</h1>
       
       <div className="card">
-        <h2>{editingId ? 'Edit Expense' : 'Add New Expense'}</h2>
+        <h2>{editingId ? 'Edit Transaction' : 'Add New Transaction'}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-row">
+            <div className="form-group">
+              <label>Type</label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value, category: e.target.value === 'credit' ? 'Income' : 'Food' })}
+              >
+                <option value="debit">Debit (Expense)</option>
+                <option value="credit">Credit (Income)</option>
+              </select>
+            </div>
+
             <div className="form-group">
               <label>Amount (₹)</label>
               <input
@@ -107,13 +122,23 @@ function Expenses() {
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               >
-                <option>Food</option>
-                <option>Transport</option>
-                <option>Entertainment</option>
-                <option>Shopping</option>
-                <option>Bills</option>
-                <option>Healthcare</option>
-                <option>Other</option>
+                {formData.type === 'credit' ? (
+                  <>
+                    <option>Salary</option>
+                    <option>Income</option>
+                    <option>Other</option>
+                  </>
+                ) : (
+                  <>
+                    <option>Food</option>
+                    <option>Transport</option>
+                    <option>Entertainment</option>
+                    <option>Shopping</option>
+                    <option>Bills</option>
+                    <option>Healthcare</option>
+                    <option>Other</option>
+                  </>
+                )}
               </select>
             </div>
             
@@ -143,12 +168,12 @@ function Expenses() {
           
           <div className="form-actions">
             <button type="submit" className="btn btn-primary">
-              {editingId ? 'Update' : 'Add'} Expense
+              {editingId ? 'Update' : 'Add'} Transaction
             </button>
             {editingId && (
               <button type="button" className="btn btn-secondary" onClick={() => {
                 setEditingId(null);
-                setFormData({ amount: '', category: 'Food', description: '', date: new Date().toISOString().split('T')[0] });
+                setFormData({ amount: '', type: 'debit', category: 'Food', description: '', date: new Date().toISOString().split('T')[0] });
               }}>
                 Cancel
               </button>
@@ -158,23 +183,30 @@ function Expenses() {
       </div>
 
       <div className="card">
-        <h2>All Expenses</h2>
+        <h2>All Transactions</h2>
         {expenses.length === 0 ? (
-          <p>No expenses yet. Add your first one above!</p>
+          <p>No transactions yet. Add your first one above!</p>
         ) : (
           <div className="expenses-table">
             {expenses.map(expense => (
-              <div key={expense.id} className="expense-row">
+              <div key={expense.id} className={`expense-row ${expense.type === 'credit' ? 'credit-row' : ''}`}>
                 <div className="expense-info">
                   <strong>{expense.description}</strong>
                   <span className="expense-meta">
-                    {expense.category} • {new Date(expense.date).toLocaleDateString()}
+                    {expense.type === 'credit' ? '💰' : '💸'} {expense.category} • {new Date(expense.date).toLocaleDateString()}
+                    {expense.isAutoGenerated && ' • Auto'}
                   </span>
                 </div>
                 <div className="expense-actions">
-                  <span className="expense-amount">₹{expense.amount.toFixed(2)}</span>
-                  <button onClick={() => handleEdit(expense)} className="btn btn-secondary btn-sm">Edit</button>
-                  <button onClick={() => handleDelete(expense.id)} className="btn btn-danger btn-sm">Delete</button>
+                  <span className={`expense-amount ${expense.type === 'credit' ? 'credit-amount' : ''}`}>
+                    {expense.type === 'credit' ? '+' : '-'}₹{expense.amount.toFixed(2)}
+                  </span>
+                  {!expense.isAutoGenerated && (
+                    <>
+                      <button onClick={() => handleEdit(expense)} className="btn btn-secondary btn-sm">Edit</button>
+                      <button onClick={() => handleDelete(expense.id)} className="btn btn-danger btn-sm">Delete</button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
