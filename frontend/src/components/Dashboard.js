@@ -48,10 +48,6 @@ function Dashboard() {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-    } catch (error) {
-      console.error('Error fetching expenses:', error);
-    }
-  };
 
   const calculateStats = (expenseData) => {
     const debits = expenseData.filter(e => e.type === 'debit');
