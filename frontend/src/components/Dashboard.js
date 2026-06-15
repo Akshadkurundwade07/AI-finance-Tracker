@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import API_URL from '../api';
 import './Dashboard.css';
@@ -10,11 +10,6 @@ function Dashboard() {
   const [editingIncome, setEditingIncome] = useState(false);
   const [newIncome, setNewIncome] = useState('');
   const [incomeMsg, setIncomeMsg] = useState('');
-
-  useEffect(() => {
-    fetchExpenses();
-    fetchProfile();
-  }, []);
 
   const fetchProfile = async () => {
     try {
@@ -33,7 +28,7 @@ function Dashboard() {
     }
   };
 
-  const fetchExpenses = async () => {
+  const fetchExpenses = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/api/expenses?limit=100`, {
@@ -43,6 +38,16 @@ function Dashboard() {
       const expensesData = response.data.expenses || response.data;
       setExpenses(expensesData);
       calculateStats(expensesData);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchExpenses();
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
